@@ -47,7 +47,7 @@ class DataSource:
             logger.success("Succeeded to dispose data source")
 
         @run_postprocessor
-        async def remove_session(self):
+        async def remove_session():
             if self._session is not None:
                 await self._session.close()
                 await self._session.remove()
