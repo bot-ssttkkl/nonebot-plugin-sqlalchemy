@@ -33,7 +33,8 @@ class DataSource:
             session_factory = sessionmaker(
                 self._engine, expire_on_commit=False, class_=AsyncSession
             )
-            self._session = async_scoped_session(session_factory, scopefunc=asyncio.current_task)
+            self._session = async_scoped_session(
+                session_factory, scopefunc=asyncio.current_task)
             logger.success("Succeeded to initialize data source")
 
         @driver.on_shutdown
@@ -45,7 +46,11 @@ class DataSource:
 
             logger.success("Succeeded to dispose data source")
 
-        run_postprocessor(self.remove_session)
+        @run_postprocessor
+        async def remove_session(self):
+            if self._session is not None:
+                await self._session.close()
+                await self._session.remove()
 
     @property
     def registry(self) -> registry:
@@ -55,11 +60,6 @@ class DataSource:
         if self._session is None:
             raise DataSourceNotReadyError()
         return self._session()
-
-    async def remove_session(self):
-        if self._session is None:
-            raise DataSourceNotReadyError()
-        await self._session.remove()
 
 
 __all__ = ("DataSource", "DataSourceNotReadyError")
