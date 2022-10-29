@@ -12,18 +12,19 @@ class DataSourceNotReadyError(RuntimeError):
 
 
 class DataSource:
-    def __init__(self, driver: Driver, url: str):
+    def __init__(self, driver: Driver, url: str, **kwargs):
         self._engine = None
         self._session = None
 
         self._registry = registry()
 
+        # 仅当debug模式时回显sql语句
+        kwargs.setdefault("echo", driver.config.log_level.lower() == 'debug')
+        kwargs.setdefault("future", True)
+
         @driver.on_startup
         async def on_startup():
-            self._engine = create_async_engine(url,
-                                               # 仅当debug模式时回显sql语句
-                                               echo=driver.config.log_level.lower() == 'debug',
-                                               future=True)
+            self._engine = create_async_engine(url, **kwargs)
 
             async with self._engine.begin() as conn:
                 await conn.run_sync(self._registry.metadata.create_all)
