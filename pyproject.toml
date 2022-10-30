@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nonebot-plugin-sqlalchemy"
-version = "0.1.4"
+version = "0.1.4.post1"
 description = ""
 authors = ["ssttkkl <huang.wen.long@hotmail.com>"]
 readme = "README.md"

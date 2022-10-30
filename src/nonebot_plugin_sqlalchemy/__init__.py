@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, AsyncEngine, create_async_engin
 from sqlalchemy.orm import registry
 from sqlalchemy.orm import sessionmaker
 
-from src.nonebot_plugin_sqlalchemy.hack_func import hack_func
+from .hack_func import hack_func
 
 
 class DataSourceNotReadyError(RuntimeError):
