@@ -43,6 +43,9 @@ login_matcher = on_command("login")
 async def handler(event: MessageEvent, matcher: Matcher):
     username, password = event.get_plaintext().split(" ")
     
+    # 此处获取的session实际上是async_scoped_session
+    # 在Matcher的一次执行过程中，多次调用data_source.session()获得的是同一个session，并且会在Matcher执行完毕后自动关闭
+    # 参考：https://docs.sqlalchemy.org/en/14/orm/extensions/asyncio.html#using-asyncio-scoped-session
     session = data_source.session()
     
     stmt = select(UserOrm).where(UserOrm.username == username, UserOrm.password == password)
