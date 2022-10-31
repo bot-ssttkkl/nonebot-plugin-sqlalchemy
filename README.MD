@@ -55,3 +55,8 @@ async def handler(event: MessageEvent, matcher: Matcher):
     if user is not None:
         await matcher.send(f"Hello, {user.nickname}")
 ```
+
+# 【4】在nonebot以外使用（如APScheduler）
+async def do_something():
+    async with AsyncEngine(data_source.engine) as session:
+        # ......
