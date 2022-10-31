@@ -17,8 +17,8 @@ _✨ NoneBot SQLAlchemy 封装插件 ✨_
   <a href="https://raw.githubusercontent.com/ssttkkl/nonebot-plugin-sqlalchemy/master/LICENSE">
     <img src="https://img.shields.io/github/license/ssttkkl/nonebot-plugin-sqlalchemy.svg" alt="license">
   </a>
-  <a href="https://pypi.python.org/pypi/nonebot-plugin-mahjong-scoreboard">
-    <img src="https://img.shields.io/pypi/v/nonebot-plugin-mahjong-scoreboard.svg" alt="pypi">
+  <a href="https://pypi.python.org/pypi/nonebot-plugin-sqlalchemy">
+    <img src="https://img.shields.io/pypi/v/nonebot-plugin-sqlalchemy.svg" alt="pypi">
   </a>
   <img src="https://img.shields.io/badge/python-3.9+-blue.svg" alt="python">
 </p>
