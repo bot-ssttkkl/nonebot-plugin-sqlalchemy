@@ -81,7 +81,7 @@ async def handler(event: MessageEvent, matcher: Matcher):
 
 通过`data_source.session()`获取AsyncSession对象，此处获取的session实际上是async_scoped_session。
 
-在Matcher的一次执行过程中，多次调用data_source.session()获得的是同一个session，并且会在Matcher执行完毕后自动关闭。也就是说我们可以像下面这样使用：
+在Matcher的一次执行过程中，多次调用`data_source.session()`获得的是同一个session，并且会在Matcher执行完毕后自动关闭。也就是说我们可以像下面这样使用：
 
 ```python
 from nonebot import on_command
@@ -113,10 +113,12 @@ async def handler(event: MessageEvent, matcher: Matcher):
 
 参考：https://docs.sqlalchemy.org/en/14/orm/extensions/asyncio.html#using-asyncio-scoped-session
 
+注意：务必保证一次Matcher执行过程不会在不同的Task中调用`data_source.session()`获取session（即不要使用`create_task()`或`ensure_future()`创建Task），否则可能出现错误。若有这样的需求，请参考下文的方法手动创建并管理session。
+
 
 ### 4、在Matcher之外使用
 
-在Matcher之外（如on_bot_connect等钩子函数中，或者是APScheduler的定时任务中）则必须通过`AsyncSession(data_source.engine)`创建Session。
+在Matcher之外（如on_bot_connect等钩子函数中，或者是APScheduler的定时任务中）则必须通过`AsyncSession(data_source.engine)`创建session。
 
 ```python
 async def do_something():
