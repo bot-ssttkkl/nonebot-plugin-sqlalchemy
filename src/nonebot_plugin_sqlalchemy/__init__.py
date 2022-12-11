@@ -5,8 +5,6 @@ from sqlalchemy.ext.asyncio import AsyncSession, AsyncEngine, create_async_engin
 from sqlalchemy.orm import registry
 from sqlalchemy.orm import sessionmaker
 
-from .hack_func import hack_func
-
 
 class DataSourceNotReadyError(RuntimeError):
     pass
@@ -19,12 +17,8 @@ class DataSource:
 
         self._registry = registry()
 
-        # 因为nonebot执行run_postprocessor时已经把current_matcher给reset了，所以需要hack
-        # 并且也不能用asyncio.current_task作为scopefunc，因为run_postprocessor是在独立的Task中执行
-        self._scopefunc = hack_func(current_matcher.get)
-
-        # 仅当debug模式时回显sql语句
-        kwargs.setdefault("echo", driver.config.log_level.lower() == 'debug')
+        # 仅当trace模式时回显sql语句
+        kwargs.setdefault("echo", driver.config.log_level == 'TRACE')
         kwargs.setdefault("future", True)
 
         @driver.on_startup
@@ -40,7 +34,7 @@ class DataSource:
                 self._engine, expire_on_commit=False, class_=AsyncSession
             )
             self._session = async_scoped_session(
-                session_factory, scopefunc=self._scopefunc)
+                session_factory, scopefunc=current_matcher.get)
             logger.success("data source initialized")
 
         @driver.on_shutdown
@@ -53,15 +47,10 @@ class DataSource:
             logger.success("data source disposed")
 
         @run_postprocessor
-        async def postprocessor(matcher: Matcher):
-            hack_t = self._scopefunc.hack.set(matcher)
-            try:
-                if self._session is not None:
-                    await self._session.close()
-                    await self._session.remove()
-                    logger.success("session removed")
-            finally:
-                self._scopefunc.hack.reset(hack_t)
+        async def postprocessor():
+            if self._session is not None:
+                await self._session.remove()
+                logger.trace("session removed")
 
     @property
     def engine(self) -> AsyncEngine:
