@@ -23,7 +23,7 @@ _✨ NoneBot SQLAlchemy 封装插件 ✨_
   <img src="https://img.shields.io/badge/python-3.9+-blue.svg" alt="python">
 </p>
 
-**建议使用https://github.com/he0119/nonebot-plugin-datastore代替**
+**建议使用 https://github.com/he0119/nonebot-plugin-datastore 代替**
 
 ## Get Started
 
