@@ -13,7 +13,7 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.9"
 nonebot2 = "^2.0.0-rc.1"
-sqlalchemy = { extras = ["asyncio"], version = "^1.4.42" }
+sqlalchemy = { extras = ["asyncio"], version = ">=1.4.42,<3.0.0" }
 
 [tool.poetry.group.dev.dependencies]
 aiosqlite = "^0.17.0"
