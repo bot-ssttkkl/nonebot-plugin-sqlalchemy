@@ -1,9 +1,28 @@
+from asyncio import gather
+from inspect import isawaitable
+from typing import Callable, Awaitable, Union
+
 from nonebot import logger, Driver
-from nonebot.internal.matcher import Matcher, current_matcher
+from nonebot.internal.matcher import current_matcher
 from nonebot.message import run_postprocessor
 from sqlalchemy.ext.asyncio import AsyncSession, AsyncEngine, create_async_engine, async_scoped_session
 from sqlalchemy.orm import registry
 from sqlalchemy.orm import sessionmaker
+
+T_OnReadyCallback = Union[Callable[[], None], Callable[[], Awaitable[None]]]
+
+T_OnEngineCreatedCallback = Union[Callable[[AsyncEngine], None], Callable[[AsyncEngine], Awaitable[None]]]
+
+
+async def _fire(callbacks, args=None, kwargs=None):
+    if args is None:
+        args = []
+    if kwargs is None:
+        kwargs = {}
+
+    coros = [f(*args, **kwargs) for f in callbacks]
+    coros = [coro for coro in coros if isawaitable(coro)]
+    await gather(*coros)
 
 
 class DataSourceNotReadyError(RuntimeError):
@@ -17,13 +36,17 @@ class DataSource:
 
         self._registry = registry()
 
+        self._on_engine_created_callback = []
+        self._on_ready_callback = []
+
         # 仅当trace模式时回显sql语句
-        kwargs.setdefault("echo", driver.config.log_level == 'TRACE')
+        kwargs.setdefault("echo", driver.config.log_level.lower() == 'TRACE')
         kwargs.setdefault("future", True)
 
         @driver.on_startup
         async def on_startup():
             self._engine = create_async_engine(url, **kwargs)
+            await _fire(self._on_engine_created_callback)
 
             async with self._engine.begin() as conn:
                 await conn.run_sync(self._registry.metadata.create_all)
@@ -35,6 +58,8 @@ class DataSource:
             )
             self._session = async_scoped_session(
                 session_factory, scopefunc=current_matcher.get)
+
+            await _fire(self._on_ready_callback)
             logger.success("data source initialized")
 
         @driver.on_shutdown
@@ -67,6 +92,12 @@ class DataSource:
         if self._session is None:
             raise DataSourceNotReadyError()
         return self._session
+
+    def on_engine_created(self, action: T_OnEngineCreatedCallback):
+        self._on_engine_created_callback.append(action)
+
+    def on_ready(self, action: T_OnReadyCallback):
+        self._on_ready_callback.append(action)
 
 
 __all__ = ("DataSource", "DataSourceNotReadyError")
