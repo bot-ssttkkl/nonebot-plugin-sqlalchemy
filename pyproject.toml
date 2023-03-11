@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nonebot-plugin-sqlalchemy"
-version = "0.1.7"
+version = "0.2.0"
 description = ""
 authors = ["ssttkkl <huang.wen.long@hotmail.com>"]
 readme = "README.MD"
@@ -12,8 +12,8 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.9"
-nonebot2 = "^2.0.0-rc.2"
-sqlalchemy = { extras = ["asyncio"], version = "^1.4.41" }
+nonebot2 = "^2.0.0-rc.3"
+sqlalchemy = { extras = ["asyncio"], version = "^2.0.0" }
 
 [tool.poetry.group.dev.dependencies]
 aiosqlite = "^0.17.0"

@@ -94,9 +94,11 @@ class DataSource:
         return self._session
 
     def on_engine_created(self, action: T_OnEngineCreatedCallback):
+        logger.trace("engine created")
         self._on_engine_created_callback.append(action)
 
     def on_ready(self, action: T_OnReadyCallback):
+        logger.trace("ready")
         self._on_ready_callback.append(action)
 
 
