@@ -192,17 +192,6 @@ pymysql = ["pymysql"]
 sqlcipher = ["sqlcipher3-binary"]
 
 [[package]]
-name = "sqlalchemy2-stubs"
-version = "0.0.2a32"
-description = "Typing Stubs for SQLAlchemy 1.4"
-category = "dev"
-optional = false
-python-versions = ">=3.6"
-
-[package.dependencies]
-typing-extensions = ">=3.7.4"
-
-[[package]]
 name = "tomlkit"
 version = "0.11.6"
 description = "Style preserving TOML library"
@@ -244,7 +233,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "5892073b2f979fded5a98e5eb5c54bfb79a2fd713a037d3a999d0be3649eb3bf"
+content-hash = "99a14942f11b4e96711fdf00cac0fddda5f544e12abab264cbb87dfc4166fe39"
 
 [metadata.files]
 aiosqlite = [
@@ -509,10 +498,6 @@ sqlalchemy = [
     {file = "SQLAlchemy-2.0.5.post1-cp39-cp39-win_amd64.whl", hash = "sha256:72e8d65b20147df71297d863981d8e56e429a8ae2bb835bd5e89efd7ef849866"},
     {file = "SQLAlchemy-2.0.5.post1-py3-none-any.whl", hash = "sha256:621e92ace804e19da2e472e349736d7ba5e2e4a14d41c4de9e2474e5f40a11ed"},
     {file = "SQLAlchemy-2.0.5.post1.tar.gz", hash = "sha256:13eb2a5882cfd9f4eedaaec14a5603a096f0125f7c3cb48611b3bfa3c253f25d"},
-]
-sqlalchemy2-stubs = [
-    {file = "sqlalchemy2-stubs-0.0.2a32.tar.gz", hash = "sha256:2a2cfab71d35ac63bf21ad841d8610cd93a3bd4c6562848c538fa975585c2739"},
-    {file = "sqlalchemy2_stubs-0.0.2a32-py3-none-any.whl", hash = "sha256:7f5fb30b0cf7c6b74c50c1d94df77ff32007afee8d80499752eb3fedffdbdfb8"},
 ]
 tomlkit = [
     {file = "tomlkit-0.11.6-py3-none-any.whl", hash = "sha256:07de26b0d8cfc18f871aec595fda24d95b08fef89d147caa861939f37230bf4b"},

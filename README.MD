@@ -23,6 +23,10 @@ _✨ NoneBot SQLAlchemy 封装插件 ✨_
   <img src="https://img.shields.io/badge/python-3.9+-blue.svg" alt="python">
 </p>
 
+为插件封装SQLAlchemy数据库访问，一个插件使用一个数据库。
+
+对于数据存储较简单的场景，推荐使用[he0119/nonebot-plugin-datastore](https://github.com/he0119/nonebot-plugin-datastore)
+
 ## Get Started
 
 ### 1、定义data_source
@@ -41,16 +45,16 @@ data_source = DataSource(get_driver(), db_conn_url)
 
 ### 2、定义映射
 ```python
-from sqlalchemy import Column, String, Integer
+from sqlalchemy.orm import mapped_column
 
 @data_source.registry.mapped
 class UserOrm:
     __tablename__ = 'users'
 
-    id: int = Column(Integer, primary_key=True, autoincrement=True)
-    username: str = Column(String)
-    password: str = Column(String)
-    nickname: str = Column(String)
+    id: int = mapped_column(primary_key=True, autoincrement=True)
+    username: str
+    password: str
+    nickname: str
 ```
 
 ### 3、在Matcher中使用

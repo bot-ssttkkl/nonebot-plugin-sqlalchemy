@@ -17,7 +17,6 @@ sqlalchemy = { extras = ["asyncio"], version = "^2.0.0" }
 
 [tool.poetry.group.dev.dependencies]
 aiosqlite = "^0.17.0"
-sqlalchemy2-stubs = "^0.0.2a29"
 flake8 = "^5.0.4"
 
 [build-system]
