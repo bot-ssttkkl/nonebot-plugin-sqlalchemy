@@ -16,7 +16,7 @@ nonebot2 = "^2.0.0-rc.3"
 sqlalchemy = { extras = ["asyncio"], version = "^2.0.0" }
 
 [tool.poetry.group.dev.dependencies]
-aiosqlite = "^0.17.0"
+aiosqlite = ">=0.17,<0.20"
 flake8 = "^5.0.4"
 
 [build-system]
