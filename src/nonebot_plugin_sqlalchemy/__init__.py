@@ -1,6 +1,7 @@
 from asyncio import gather
 from inspect import isawaitable
-from typing import Callable, Awaitable, Union
+from typing import Callable, Awaitable, Union, List
+from urllib.parse import urlparse
 
 from nonebot import logger, Driver
 from nonebot.internal.matcher import current_matcher
@@ -12,6 +13,10 @@ from sqlalchemy.orm import sessionmaker
 T_OnReadyCallback = Union[Callable[[], None], Callable[[], Awaitable[None]]]
 
 T_OnEngineCreatedCallback = Union[Callable[[AsyncEngine], None], Callable[[AsyncEngine], Awaitable[None]]]
+
+T_OnRemoveSession = Union[Callable[[], None], Callable[[], Awaitable[None]]]
+
+T_OnSessionRemoved = Union[Callable[[], None], Callable[[], Awaitable[None]]]
 
 
 async def _fire(callbacks, args=None, kwargs=None):
@@ -30,14 +35,26 @@ class DataSourceNotReadyError(RuntimeError):
 
 
 class DataSource:
+    @staticmethod
+    def _detect_dialect(url: str):
+        parsed_url = urlparse(url)
+        if '+' in parsed_url.scheme:
+            return parsed_url.scheme.split('+')[0]
+        else:
+            return parsed_url.scheme
+
     def __init__(self, driver: Driver, url: str, **kwargs):
         self._engine = None
         self._session = None
 
         self._registry = registry()
 
-        self._on_engine_created_callback = []
-        self._on_ready_callback = []
+        self._on_engine_created_callback: List[T_OnEngineCreatedCallback] = []
+        self._on_ready_callback: List[T_OnReadyCallback] = []
+        self._on_remove_session_callback: List[T_OnRemoveSession] = []
+        self._on_session_removed_callback: List[T_OnSessionRemoved] = []
+
+        self.dialect = self._detect_dialect(url)
 
         # 仅当trace模式时回显sql语句
         kwargs.setdefault("echo", driver.config.log_level.lower() == 'TRACE')
@@ -74,8 +91,10 @@ class DataSource:
         @run_postprocessor
         async def postprocessor():
             if self._session is not None:
+                await _fire(self._on_remove_session_callback)
                 await self._session.remove()
                 logger.trace("session removed")
+                await _fire(self._on_session_removed_callback)
 
     @property
     def engine(self) -> AsyncEngine:
@@ -94,12 +113,16 @@ class DataSource:
         return self._session
 
     def on_engine_created(self, action: T_OnEngineCreatedCallback):
-        logger.trace("engine created")
         self._on_engine_created_callback.append(action)
 
     def on_ready(self, action: T_OnReadyCallback):
-        logger.trace("ready")
         self._on_ready_callback.append(action)
+
+    def on_remove_session(self, action: T_OnRemoveSession):
+        self._on_remove_session_callback.append(action)
+
+    def on_session_removed(self, action: T_OnRemoveSession):
+        self._on_session_removed_callback.append(action)
 
 
 __all__ = ("DataSource", "DataSourceNotReadyError")
