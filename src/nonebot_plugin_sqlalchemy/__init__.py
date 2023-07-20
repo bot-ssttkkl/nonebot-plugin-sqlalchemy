@@ -6,9 +6,18 @@ from urllib.parse import urlparse
 from nonebot import logger, Driver
 from nonebot.internal.matcher import current_matcher
 from nonebot.message import run_postprocessor
+from nonebot.plugin import PluginMetadata
 from sqlalchemy.ext.asyncio import AsyncSession, AsyncEngine, create_async_engine, async_scoped_session
 from sqlalchemy.orm import registry
 from sqlalchemy.orm import sessionmaker
+
+__plugin_meta__ = PluginMetadata(
+    name="NoneBot2 SQLAlchemy 插件",
+    description="为插件开发者提供简单的SQLAlchemy封装",
+    usage="参见 https://github.com/bot-ssttkkl/nonebot-plugin-sqlalchemy",
+    type="application",
+    homepage="https://github.com/bot-ssttkkl/nonebot-plugin-sqlalchemy"
+)
 
 T_OnReadyCallback = Union[Callable[[], None], Callable[[], Awaitable[None]]]
 
